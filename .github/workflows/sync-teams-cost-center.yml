@@ -1,4 +1,4 @@
-name: Sync Cost Center with Teams
+name: Sync Teams with Cost Center
 
 on:
   schedule:
