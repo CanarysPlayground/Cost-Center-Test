@@ -1,8 +1,7 @@
 import os
 import requests
 import logging
-from dotenv import load_dotenv
-from typing import Set, List
+from typing import Set
 
 # Setup logging
 logging.basicConfig(
@@ -137,7 +136,6 @@ def fetch_cost_center_members(
         raise SystemExit(f"Non-JSON response from cost center API")
 
     # Extract users from cost center response
-    # The exact structure may vary - adjust based on actual API response
     logins: Set[str] = set()
     
     # Try different possible structures
@@ -283,13 +281,11 @@ def sync_cost_center_with_team(
 
 def main():
     """Main entry point for the sync script."""
-    load_dotenv()
-
-    # Load configuration from environment variables
+    # Load configuration from environment variables (GitHub Secrets)
     base = os.getenv("GITHUB_API_BASE", "https://api.github.com").rstrip("/")
     enterprise = os.getenv("GITHUB_ENTERPRISE")
     team_slug = os.getenv("GITHUB_TEAM_SLUG")
-    cost_center_id = os.getenv("COST_CENTER_ID")
+    cost_center_id = os.getenv("GITHUB_COST_CENTER_ID")
     token = os.getenv("GITHUB_TOKEN")
 
     # Validate required environment variables
@@ -299,13 +295,13 @@ def main():
     if not team_slug:
         missing.append("GITHUB_TEAM_SLUG")
     if not cost_center_id:
-        missing.append("COST_CENTER_ID")
+        missing.append("GITHUB_COST_CENTER_ID")
     if not token:
         missing.append("GITHUB_TOKEN")
     
     if missing:
         logging.error(f"Missing required environment variables: {', '.join(missing)}")
-        logging.error("Please configure these in your .env file")
+        logging.error("Please set these as GitHub Secrets or environment variables")
         raise SystemExit(1)
 
     # Run the sync
